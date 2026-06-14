@@ -183,7 +183,7 @@ namespace Hospital_Management_System
 
             int doctorId =int.Parse(Console.ReadLine());
 
-
+            var selectedDoctor = context.Doctors.FirstOrDefault(item => item.doctorId == doctorId);
 
             Console.WriteLine("Enter  slot Date");
             string slotDate = Console.ReadLine();

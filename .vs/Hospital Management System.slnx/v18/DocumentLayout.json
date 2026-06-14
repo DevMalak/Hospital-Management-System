@@ -37,6 +37,14 @@
           "SelectedChildIndex": 7,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{c6f34f0d-7ae5-4f3a-be61-fe0c21ae9eb8}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "AvailableSlot.cs",
@@ -44,18 +52,10 @@
               "RelativeDocumentMoniker": "Hospital Management System\\Models\\AvailableSlot.cs",
               "ToolTip": "C:\\Users\\user\\Documents\\solutions\\Hospital Management System\\Hospital Management System\\Models\\AvailableSlot.cs",
               "RelativeToolTip": "Hospital Management System\\Models\\AvailableSlot.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAAABQAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAgwBgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-14T08:03:37.088Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{c6f34f0d-7ae5-4f3a-be61-fe0c21ae9eb8}"
             },
             {
               "$type": "Document",
@@ -67,8 +67,7 @@
               "RelativeToolTip": "Hospital Management System\\Models\\Doctor.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAAAsAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-13T12:08:30.564Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-13T12:08:30.564Z"
             },
             {
               "$type": "Document",
@@ -105,8 +104,7 @@
               "RelativeToolTip": "Hospital Management System\\HospitalContext.cs",
               "ViewState": "AgIAAAgAAAAAAAAAAAAgwBAAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-13T06:08:15.01Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-13T06:08:15.01Z"
             },
             {
               "$type": "Document",
@@ -116,7 +114,7 @@
               "RelativeDocumentMoniker": "Hospital Management System\\Program.cs",
               "ToolTip": "C:\\Users\\user\\Documents\\solutions\\Hospital Management System\\Hospital Management System\\Program.cs",
               "RelativeToolTip": "Hospital Management System\\Program.cs",
-              "ViewState": "AgIAANEAAAAAAAAAAAAAAAIBAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAACQBAAAAAAAAAAAAACABAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-11T08:10:03.414Z",
               "EditorCaption": ""
