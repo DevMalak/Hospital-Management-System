@@ -1,10 +1,11 @@
 ﻿using Hospital_Management_System.Models;
+using System.Timers;
 
 namespace Hospital_Management_System
 {
     internal class Program
     {
-        public static void RegistrationPatient(HospitalContext context)
+        public static void RegistrationPatient(HospitalContext context) //01
         {
             Console.WriteLine("Enter patient Name:");
             string patientName = Console.ReadLine();
@@ -49,16 +50,16 @@ namespace Hospital_Management_System
 
             );
 
-            Console.WriteLine("patient added Succesfully with ID"+ patientId);
+            Console.WriteLine("patient added Succesfully with ID" + patientId);
         }
 
-        public static void AddNewDoctor(HospitalContext context)
+        public static void AddNewDoctor(HospitalContext context) //02
         {
             Console.WriteLine("Enter doctor Name:");
             string doctorName = Console.ReadLine();
 
             Console.WriteLine("Enter doctor Specialization:");
-           string doctorSpecialization = Console.ReadLine();
+            string doctorSpecialization = Console.ReadLine();
 
             Console.WriteLine("Enter doctor Phone:");
             string doctorPhone = Console.ReadLine();
@@ -67,7 +68,7 @@ namespace Hospital_Management_System
             string doctorEmail = Console.ReadLine();
 
             Console.WriteLine("Enter consultation Fee:");
-          decimal consultationFee = decimal.Parse (Console.ReadLine());
+            decimal consultationFee = decimal.Parse(Console.ReadLine());
 
             int doctorId = (context.Doctors.Count) + 1;
 
@@ -75,12 +76,12 @@ namespace Hospital_Management_System
 
                 new Doctor
                 {
-                    doctorId= doctorId,
-                    doctorName= doctorName,
-                    doctorSpecialization= doctorSpecialization,
-                    doctorPhone= doctorPhone,
-                    doctorEmail= doctorEmail,
-                    consultationFee= consultationFee,
+                    doctorId = doctorId,
+                    doctorName = doctorName,
+                    doctorSpecialization = doctorSpecialization,
+                    doctorPhone = doctorPhone,
+                    doctorEmail = doctorEmail,
+                    consultationFee = consultationFee,
 
 
                 }
@@ -95,13 +96,12 @@ namespace Hospital_Management_System
 
 
 
-
-
-
-
         }
+    
 
-        public static void ViewAllPatients(HospitalContext context)
+        
+
+        public static void ViewAllPatients(HospitalContext context) //03
         {
 
 
@@ -136,7 +136,7 @@ namespace Hospital_Management_System
         }
 
 
-        public static void ViewDoctorsSpecialization(HospitalContext context)
+        public static void ViewDoctorsSpecialization(HospitalContext context) //04
         {
             Console.WriteLine("Enter Specialization");
             string doctorSpecialization = Console.ReadLine();
@@ -164,13 +164,61 @@ namespace Hospital_Management_System
 
 
 
+        }
+
+
+        public static void AddAvailableimeSlotDoctor(HospitalContext context) //05
+        {
+
+            Console.WriteLine("Select a Doctor");
+
+            foreach (var doctor in context.Doctors)
+            {
+
+             Console.WriteLine("ID=" + doctor.doctorId + ", Name=" + doctor.doctorName + ", Specialization=" + doctor.doctorSpecialization + ", Phone=" + doctor.doctorPhone + ", Email=" + doctor.doctorEmail + ", Consultation Fee=" + doctor.consultationFee);
+
+            }
+
+            Console.WriteLine("Enter ID Doctor you want:");
+
+            int doctorId =int.Parse(Console.ReadLine());
 
 
 
+            Console.WriteLine("Enter  slot Date");
+            string slotDate = Console.ReadLine();
 
 
+            Console.WriteLine("Enter  slot Time");
+            string slotTime = Console.ReadLine();
+
+            int newSlotId = context.AvailableSlots.Count() + 1;
+
+            context.AvailableSlots.Add(
+
+
+                new AvailableSlot
+                {
+
+                  slotId =newSlotId,
+
+                 doctorId=doctorId,
+
+                 slotDate= slotDate,
+
+                 slotTime=slotTime,
+
+                 isBooked=false,
+                } );
+
+
+            Console.WriteLine("Slot added Successfully");
 
         }
+
+
+
+
 
         static void Main(string[] args)
         {
@@ -221,6 +269,11 @@ namespace Hospital_Management_System
                     case 4:
                         ViewDoctorsSpecialization(context);
                         break;
+
+                    case 5:
+                        AddAvailableimeSlotDoctor(context);
+                        break;
+
                     case 0:
                         exit = true;
                         break;
