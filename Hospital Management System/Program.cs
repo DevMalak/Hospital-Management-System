@@ -265,7 +265,7 @@ namespace Hospital_Management_System
             int slotId = int.Parse(Console.ReadLine());
 
             var selectedSlot = context.AvailableSlots
-   .FirstOrDefault(item => item.slotId == slotId);
+            .FirstOrDefault(item => item.slotId == slotId);
             if (selectedSlot == null)
             {
                 Console.WriteLine("Invalid or already booked slot");
@@ -291,36 +291,114 @@ namespace Hospital_Management_System
 
 
 
+        public static void CancelAppointment(HospitalContext context) //07
+        {
+            //  موظف الاستقبال يبحث عن الموعد باستخدام الايدي
+
+            Console.WriteLine("Enter Appointment ID:");
+            int appointmentId = int.Parse(Console.ReadLine());
+
+            var selectedAppointment = context.Appointments
+                .FirstOrDefault(item => item.appointmentId == appointmentId);
+
+            // إذا لم يكن الموعد موجواً
+
+            if (selectedAppointment == null)
+            {
+                Console.WriteLine("Appointment not found");
+                return;
+            }
+
+            // اذا كان الموعد ملغي مسبق
+
+            if (selectedAppointment.status == "Cancelled")
+            {
+                Console.WriteLine("Appointment already cancelled");
+                return;
+            }
+
+            // تحديث حالة الموعد إلى Cancelled
+
+            selectedAppointment.status = "Cancelled";
+
+            //  إعادة فتح نفس الوقت ليصبح متاحاً لمريض آخر
+
+            var selectedSlot = context.AvailableSlots
+                .FirstOrDefault(item =>
+                    item.doctorId == selectedAppointment.doctorId &&
+                    item.slotDate == selectedAppointment.appointmentDate &&
+                    item.slotTime == selectedAppointment.appointmentTime);
+
+            
+            if (selectedSlot != null)
+            {
+                selectedSlot.isBooked = false;
+            }
+
+            //  إظهار رسالة نجاح الإلغاء
+
+            Console.WriteLine("Appointment Cancelled Successfully");
+        }
 
 
 
+        public static void CreateMedicalRecord(HospitalContext context) //08
+        {
+            //  الممرضة تربط السجل الطبي بالموعد الخاص بهذه الزيارة
 
+            Console.WriteLine("Enter appointment Id");
+            int appointmentId = int.Parse(Console.ReadLine());
 
+            var selectedAppointment = context.Appointments
+                .FirstOrDefault(item => item.appointmentId == appointmentId);
 
+            // إذا لم يكن الموعد موجوداً
 
+            if (selectedAppointment == null)
+            {
+                Console.WriteLine("Appointment not found");
+                return;
+            }
 
+            //  إدخال التشخيص
 
+            Console.WriteLine("Enter Diagnosis:");
+            string diagnosis = Console.ReadLine();
 
+            //  إدخال الدواء الموصوف
 
+            Console.WriteLine("Enter Prescription:");
+            string prescription = Console.ReadLine();
 
+            //  الحصول على رسوم الطبيب المرتبط بهذا الموعد
 
+            var selectedDoctor = context.Doctors
+                .FirstOrDefault(item => item.doctorId == selectedAppointment.doctorId);
 
+            int recordId = context.MedicalRecords.Count + 1;
 
+            //  إنشاء السجل الطبي وحفظه في النظام
 
+            context.MedicalRecords.Add(
+                new MedicalRecord
+                {
+                    recordId = recordId,
+                    patientId = selectedAppointment.patientId,
+                    doctorId = selectedAppointment.doctorId,
+                    appointmentId = selectedAppointment.appointmentId,
+                    diagnosis = diagnosis,
+                    prescription = prescription,
+                    visitDate = selectedAppointment.appointmentDate,
+                    visitFee = selectedDoctor.consultationFee
+                }
+            );
 
+            // تحديث حالة الموعد إلى Completed لأن الزيارة انتهت
 
+            selectedAppointment.status = "Completed";
 
-
-
-
-
-
-
-
-
-
-
-
+            Console.WriteLine("Medical record created succssfully");
+        }
 
 
 
@@ -381,6 +459,16 @@ namespace Hospital_Management_System
                     case 6:
                         BookAppointment(context);
                         break;
+
+                    case 7:
+                        CancelAppointment(context);
+                       
+                        break;
+
+                    case 8:
+                        CreateMedicalRecord(context);
+                        break;
+
 
                     case 0:
                         exit = true;
