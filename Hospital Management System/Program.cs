@@ -98,9 +98,6 @@ namespace Hospital_Management_System
 
         }
     
-
-        
-
         public static void ViewAllPatients(HospitalContext context) //03
         {
 
@@ -217,6 +214,113 @@ namespace Hospital_Management_System
         }
 
 
+        public static void BookAppointment(HospitalContext context)//06
+        {
+
+            Console.WriteLine("Select paitent");
+
+            foreach (var patient in context.Patients) 
+            {
+
+
+                Console.WriteLine("ID=" + patient.patientId + ",Name=" + patient.patientName + ", Age = " + patient.patientAge + ", Gender = " + patient.patientGender +
+                    ", Phone = " + patient.patientPhone + ", Email = " + patient.patientEmail + ", Blood Type = " + patient.patientBloodType);
+            }
+
+            int patientId = int.Parse(Console.ReadLine());
+
+
+            Console.WriteLine("Select Doctor");
+
+            foreach (var doctor in context.Doctors)
+            {
+
+           Console.WriteLine("ID=" + doctor.doctorId + ", Name=" + doctor.doctorName + ", Specialization=" + doctor.doctorSpecialization + ", Phone=" + doctor.doctorPhone + ", Email=" + doctor.doctorEmail + ", Consultation Fee=" + doctor.consultationFee);
+
+
+            }
+
+            int doctorId = int.Parse(Console.ReadLine());
+            Console.WriteLine("Available Slot");
+
+            bool slotFound = false;
+
+            foreach (var slot in context.AvailableSlots)
+            {
+                if (slot.doctorId == doctorId && slot.isBooked == false)
+                {
+                    slotFound = true;
+
+                    Console.WriteLine("Slot ID=" + slot.slotId + ", Date=" + slot.slotDate + ", Time=" + slot.slotTime);
+
+                }
+            }
+            if (slotFound == false)
+            {
+                Console.WriteLine("No Available slots for this doctor");
+                return;
+            }
+
+            Console.WriteLine("Enter Slot ID:");
+            int slotId = int.Parse(Console.ReadLine());
+
+            var selectedSlot = context.AvailableSlots
+   .FirstOrDefault(item => item.slotId == slotId);
+            if (selectedSlot == null)
+            {
+                Console.WriteLine("Invalid or already booked slot");
+                return;
+            }
+            int appointmentId = context.Appointments.Count + 1;
+
+            context.Appointments.Add(
+                new Appointment
+                {
+                    appointmentId = appointmentId,
+                    patientId = patientId,
+                    doctorId = doctorId,
+                    appointmentDate = selectedSlot.slotDate,
+                    appointmentTime = selectedSlot.slotTime,
+                    status = "Booked"
+                }
+            );
+            selectedSlot.isBooked = true;
+
+            Console.WriteLine("Appointement Booked Successfully");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -272,6 +376,10 @@ namespace Hospital_Management_System
 
                     case 5:
                         AddAvailableimeSlotDoctor(context);
+                        break;
+
+                    case 6:
+                        BookAppointment(context);
                         break;
 
                     case 0:
