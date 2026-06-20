@@ -138,31 +138,54 @@ namespace Hospital_Management_System
             Console.WriteLine("Enter Specialization");
             string doctorSpecialization = Console.ReadLine();
 
-            bool doctorFound = false;
+            //bool doctorFound = false;
 
-            foreach(var doctor in context.Doctors)
-            {
+            //foreach(var doctor in context.Doctors)
+            //{
 
-                if (doctor.doctorSpecialization == doctorSpecialization)
-                {
+            //    if (doctor.doctorSpecialization == doctorSpecialization)
+            //    {
 
-                    doctorFound = true;
-                    Console.WriteLine("ID=" + doctor.doctorId + ", Name=" + doctor.doctorName + ", Specialization=" + doctor.doctorSpecialization + ", Phone=" + doctor.doctorPhone + ", Email=" + doctor.doctorEmail + ", Consultation Fee=" + doctor.consultationFee);
+            //        doctorFound = true;
+            //        Console.WriteLine("ID=" + doctor.doctorId + ", Name=" + doctor.doctorName + ", Specialization=" + doctor.doctorSpecialization + ", Phone=" + doctor.doctorPhone + ", Email=" + doctor.doctorEmail + ", Consultation Fee=" + doctor.consultationFee);
 
-                }
+            //    }
+
+            //}
+            //if (doctorFound == false)
+            //{
+
+            //    Console.WriteLine("No doctor found");
+            //}
             
-            }
-            if (doctorFound == false)
-            {
 
+            //**********************************************************************************//
+
+            // anothe way to solve question 4 by using LINQ
+            
+            var doctors = context.Doctors
+                     .Where(item => item.doctorSpecialization == doctorSpecialization)
+                     .ToList();
+
+            if (doctors.Count > 0)
+            {
+                foreach (var doctor in doctors)
+                {
+                  
+                    Console.WriteLine("ID=" + doctor.doctorId + ", Name=" + doctor.doctorName + ", Specialization=" + doctor.doctorSpecialization + ", Phone=" + doctor.doctorPhone + ", Email=" + doctor.doctorEmail + ", Consultation Fee=" + doctor.consultationFee);
+                }
+            }
+            else
+            {
                 Console.WriteLine("No doctor found");
             }
 
 
-
-
         }
+        //*******************************************************************************//
 
+
+        //*********************************************************************************//
 
         public static void AddAvailableimeSlotDoctor(HospitalContext context) //05
         {
@@ -180,7 +203,15 @@ namespace Hospital_Management_System
 
             int doctorId =int.Parse(Console.ReadLine());
 
+            //var selectedDoctor = context.Doctors.FirstOrDefault(item => item.doctorId == doctorId);
+
             var selectedDoctor = context.Doctors.FirstOrDefault(item => item.doctorId == doctorId);
+
+            if (selectedDoctor == null)
+            {
+                Console.WriteLine("Doctor not found");
+                return;
+            }
 
             Console.WriteLine("Enter  slot Date");
             string slotDate = Console.ReadLine();
@@ -213,6 +244,14 @@ namespace Hospital_Management_System
 
         }
 
+
+        //**************************************************************************//
+
+
+
+        //**************************************************************************//
+
+        //solving question 06 by LINQ
 
         public static void BookAppointment(HospitalContext context)//06
         {
@@ -264,8 +303,7 @@ namespace Hospital_Management_System
             Console.WriteLine("Enter Slot ID:");
             int slotId = int.Parse(Console.ReadLine());
 
-            var selectedSlot = context.AvailableSlots
-            .FirstOrDefault(item => item.slotId == slotId);
+            var selectedSlot = context.AvailableSlots.FirstOrDefault(item => item.slotId == slotId);
             if (selectedSlot == null)
             {
                 Console.WriteLine("Invalid or already booked slot");
@@ -290,18 +328,23 @@ namespace Hospital_Management_System
         }
 
 
+        //*********************************************************************************************
+
+
+
+
+
+
 
         public static void CancelAppointment(HospitalContext context) //07
         {
-            //  موظف الاستقبال يبحث عن الموعد باستخدام الايدي
-
+            
             Console.WriteLine("Enter Appointment ID:");
             int appointmentId = int.Parse(Console.ReadLine());
 
             var selectedAppointment = context.Appointments
                 .FirstOrDefault(item => item.appointmentId == appointmentId);
 
-            // إذا لم يكن الموعد موجواً
 
             if (selectedAppointment == null)
             {
@@ -309,7 +352,6 @@ namespace Hospital_Management_System
                 return;
             }
 
-            // اذا كان الموعد ملغي مسبق
 
             if (selectedAppointment.status == "Cancelled")
             {
@@ -317,11 +359,8 @@ namespace Hospital_Management_System
                 return;
             }
 
-            // تحديث حالة الموعد إلى Cancelled
 
             selectedAppointment.status = "Cancelled";
-
-            //  إعادة فتح نفس الوقت ليصبح متاحاً لمريض آخر
 
             var selectedSlot = context.AvailableSlots
                 .FirstOrDefault(item =>
@@ -335,7 +374,7 @@ namespace Hospital_Management_System
                 selectedSlot.isBooked = false;
             }
 
-            //  إظهار رسالة نجاح الإلغاء
+            
 
             Console.WriteLine("Appointment Cancelled Successfully");
         }
@@ -344,7 +383,7 @@ namespace Hospital_Management_System
 
         public static void CreateMedicalRecord(HospitalContext context) //08
         {
-            //  الممرضة تربط السجل الطبي بالموعد الخاص بهذه الزيارة
+            
 
             Console.WriteLine("Enter appointment Id");
             int appointmentId = int.Parse(Console.ReadLine());
@@ -352,7 +391,7 @@ namespace Hospital_Management_System
             var selectedAppointment = context.Appointments
                 .FirstOrDefault(item => item.appointmentId == appointmentId);
 
-            // إذا لم يكن الموعد موجوداً
+           
 
             if (selectedAppointment == null)
             {
@@ -360,24 +399,24 @@ namespace Hospital_Management_System
                 return;
             }
 
-            //  إدخال التشخيص
+            
 
             Console.WriteLine("Enter Diagnosis:");
             string diagnosis = Console.ReadLine();
 
-            //  إدخال الدواء الموصوف
+           
 
             Console.WriteLine("Enter Prescription:");
             string prescription = Console.ReadLine();
 
-            //  الحصول على رسوم الطبيب المرتبط بهذا الموعد
+   
 
             var selectedDoctor = context.Doctors
                 .FirstOrDefault(item => item.doctorId == selectedAppointment.doctorId);
 
             int recordId = context.MedicalRecords.Count + 1;
 
-            //  إنشاء السجل الطبي وحفظه في النظام
+
 
             context.MedicalRecords.Add(
                 new MedicalRecord
@@ -393,7 +432,7 @@ namespace Hospital_Management_System
                 }
             );
 
-            // تحديث حالة الموعد إلى Completed لأن الزيارة انتهت
+            
 
             selectedAppointment.status = "Completed";
 
@@ -401,6 +440,100 @@ namespace Hospital_Management_System
         }
 
 
+
+        public static void GeneratePatientMedicalHistory(HospitalContext context)//09
+        {
+            Console.WriteLine("Enter Patient ID:");
+            int patientId = int.Parse(Console.ReadLine());
+
+            var patient = context.Patients
+                .FirstOrDefault(p => p.patientId == patientId);
+
+            if (patient == null)
+            {
+                Console.WriteLine("Patient not found");
+                return;
+            }
+
+            var records = context.MedicalRecords
+                .Where(r => r.patientId == patientId)
+                .ToList();
+
+            if (records.Count == 0)
+            {
+                Console.WriteLine("No medical records found");
+                return;
+            }
+
+            Console.WriteLine($"\nMedical History for: {patient.patientName}");
+
+            foreach (var r in records)
+            {
+                var doctorName = context.Doctors
+                    .Where(d => d.doctorId == r.doctorId)
+                    .Select(d => d.doctorName)
+                    .FirstOrDefault();
+
+                Console.WriteLine(
+                    "Visit Date=" + r.visitDate +
+                    ", Doctor=" + doctorName +
+                    ", Diagnosis=" + r.diagnosis +
+                    ", Prescription=" + r.prescription +
+                    ", Fee=" + r.visitFee
+                );
+            }
+
+            decimal total = records.Sum(r => r.visitFee);
+
+            Console.WriteLine("--------------------------------");
+            Console.WriteLine("Total Amount Charged = " + total);
+        }
+
+        public static void DoctorWorkloadAndRevenueSummary(HospitalContext context)//10
+        {
+            Console.WriteLine(" Doctor Workload & Revenue Summary ");
+
+            if (context.Doctors.Count == 0)
+            {
+                Console.WriteLine("No doctors found");
+                return;
+            }
+            if (context.Appointments.Count == 0)
+            {
+                Console.WriteLine("No appointments recorded yet");
+                return;
+            }
+            var sortedDoctors = context.Doctors
+                .OrderByDescending(d =>
+                    context.MedicalRecords
+                    .Where(r => r.doctorId == d.doctorId)
+                    .Sum(r => r.visitFee)
+                )
+                .ToList();
+
+            foreach (var doctor in sortedDoctors)
+            {
+                int completed = context.Appointments
+                    .Count(a => a.doctorId == doctor.doctorId && a.status == "Completed");
+
+                int cancelled = context.Appointments
+                    .Count(a => a.doctorId == doctor.doctorId && a.status == "Cancelled");
+
+                decimal revenue = context.MedicalRecords
+                    .Where(r => r.doctorId == doctor.doctorId)
+                    .Sum(r => r.visitFee);
+
+                Console.WriteLine(
+                    "Doctor ID=" + doctor.doctorId +
+                    ", Name=" + doctor.doctorName +
+                    ", Specialization=" + doctor.doctorSpecialization +
+                    ", Completed=" + completed +
+                    ", Cancelled=" + cancelled +
+                    ", Revenue=" + revenue
+                );
+            }
+            Console.WriteLine("Report Generated Successfully");
+        }
 
         static void Main(string[] args)
         {
@@ -469,7 +602,12 @@ namespace Hospital_Management_System
                         CreateMedicalRecord(context);
                         break;
 
-
+                    case 9:
+                        GeneratePatientMedicalHistory(context);
+                        break;
+                    case 10:
+                        DoctorWorkloadAndRevenueSummary(context);
+                        break;
                     case 0:
                         exit = true;
                         break;
