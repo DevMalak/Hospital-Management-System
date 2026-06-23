@@ -157,15 +157,15 @@ namespace Hospital_Management_System
 
             //    Console.WriteLine("No doctor found");
             //}
-            
+
 
             //**********************************************************************************//
 
             // anothe way to solve question 4 by using LINQ
-            
+
             var doctors = context.Doctors
-                     .Where(item => item.doctorSpecialization == doctorSpecialization)
-                     .ToList();
+           .Where(item => item.doctorSpecialization.ToLower() == doctorSpecialization.ToLower())
+            .ToList();
 
             if (doctors.Count > 0)
             {
@@ -251,57 +251,67 @@ namespace Hospital_Management_System
 
         //**************************************************************************//
 
-        //solving question 06 by LINQ
 
         public static void BookAppointment(HospitalContext context)//06
         {
+            Console.WriteLine("\n=== Book an Appointment ===");
 
-            Console.WriteLine("Select paitent");
-
-            foreach (var patient in context.Patients)
-            {
-                Console.WriteLine("ID=" + patient.patientId + ",Name=" + patient.patientName + ", Age = " + patient.patientAge + ", Gender = " + patient.patientGender +
-                    ", Phone = " + patient.patientPhone + ", Email = " + patient.patientEmail + ", Blood Type = " + patient.patientBloodType);
-            }
+            
+            context.Patients.ForEach(p =>
+                Console.WriteLine("ID=" + p.patientId + ", Name=" + p.patientName + ", Age=" + p.patientAge +
+                ", Gender=" + p.patientGender + ", Phone=" + p.patientPhone + ", Email=" + p.patientEmail +
+                ", Blood Type=" + p.patientBloodType)
+            );
 
             Console.WriteLine("Enter Patient ID:");
             int patientId = int.Parse(Console.ReadLine());
 
-
-            Console.WriteLine("Select Doctor");
-
-            foreach (var doctor in context.Doctors)
+            var patient = context.Patients.FirstOrDefault(p => p.patientId == patientId);
+            if (patient == null)
             {
-                Console.WriteLine("ID=" + doctor.doctorId + ", Name=" + doctor.doctorName + ", Specialization=" + doctor.doctorSpecialization + ", Phone=" + doctor.doctorPhone + ", Email=" + doctor.doctorEmail + ", Consultation Fee=" + doctor.consultationFee);
+                Console.WriteLine("Patient not found");
+                return;
             }
+
+            
+            context.Doctors.ForEach(d =>
+                Console.WriteLine("ID=" + d.doctorId + ", Name=" + d.doctorName +
+                ", Specialization=" + d.doctorSpecialization + ", Phone=" + d.doctorPhone +
+                ", Email=" + d.doctorEmail + ", Consultation Fee=" + d.consultationFee)
+            );
 
             Console.WriteLine("Enter Doctor ID:");
             int doctorId = int.Parse(Console.ReadLine());
 
-            Console.WriteLine("Available Slot");
-
-            bool slotFound = false;
-
-            foreach (var slot in context.AvailableSlots)
+            var doctor = context.Doctors.FirstOrDefault(d => d.doctorId == doctorId);
+            if (doctor == null)
             {
-                if (slot.doctorId == doctorId && slot.isBooked == false)
-                {
-                    slotFound = true;
-
-                    Console.WriteLine("Slot ID=" + slot.slotId + ", Date=" + slot.slotDate + ", Time=" + slot.slotTime);
-                }
+                Console.WriteLine("Doctor not found");
+                return;
             }
 
-            if (slotFound == false)
+           
+            var openSlots = context.AvailableSlots
+                .Where(s => s.doctorId == doctorId && s.isBooked == false)
+                .ToList();
+
+            if (openSlots.Count == 0)
             {
                 Console.WriteLine("No Available slots for this doctor");
                 return;
             }
 
+            Console.WriteLine("Available Slot");
+
+            openSlots.ForEach(s =>
+                Console.WriteLine("Slot ID=" + s.slotId + ", Date=" + s.slotDate + ", Time=" + s.slotTime)
+            );
+
             Console.WriteLine("Enter Slot ID:");
             int slotId = int.Parse(Console.ReadLine());
 
-            var selectedSlot = context.AvailableSlots.FirstOrDefault(item => item.slotId == slotId);
+            var selectedSlot = openSlots.FirstOrDefault(s => s.slotId == slotId);
+
             if (selectedSlot == null)
             {
                 Console.WriteLine("Invalid or already booked slot");
@@ -310,68 +320,73 @@ namespace Hospital_Management_System
 
             int appointmentId = context.Appointments.Count + 1;
 
-            context.Appointments.Add(
-                new Appointment
-                {
-                    appointmentId = appointmentId,
-                    patientId = patientId,
-                    doctorId = doctorId,
-                    appointmentDate = selectedSlot.slotDate,
-                    appointmentTime = selectedSlot.slotTime,
-                    status = "Scheduled"
-                }
-            );
+            context.Appointments.Add(new Appointment
+            {
+                appointmentId = appointmentId,
+                patientId = patientId,
+                doctorId = doctorId,
+                appointmentDate = selectedSlot.slotDate,
+                appointmentTime = selectedSlot.slotTime,
+                status = "Scheduled"
+            });
 
             selectedSlot.isBooked = true;
 
             Console.WriteLine("Appointment Booked Successfully");
         }
-
         //*********************************************************************************************
 
 
 
-        public static void CancelAppointment(HospitalContext context) //07
+        public static void CancelAppointment(HospitalContext context)//07
         {
+            Console.WriteLine("\n=== Cancel Appointment ===");
+
             Console.WriteLine("Enter Appointment ID:");
             int appointmentId = int.Parse(Console.ReadLine());
 
-            var selectedAppointment = context.Appointments
-                .FirstOrDefault(item => item.appointmentId == appointmentId);
+            
+            var appointment = context.Appointments
+                .FirstOrDefault(a => a.appointmentId == appointmentId);
 
-            if (selectedAppointment == null)
+            if (appointment == null)
             {
                 Console.WriteLine("Appointment not found");
                 return;
             }
 
-            if (selectedAppointment.status == "Cancelled")
+            if (appointment.status == "Cancelled")
             {
                 Console.WriteLine("Appointment already cancelled");
                 return;
             }
 
-            if (selectedAppointment.status == "Completed")
+            if (appointment.status == "Completed")
             {
                 Console.WriteLine("Cannot cancel completed appointment");
                 return;
             }
 
-            selectedAppointment.status = "Cancelled";
+            
+            appointment.status = "Cancelled";
 
-            var selectedSlot = context.AvailableSlots
-                .FirstOrDefault(item =>
-                    item.doctorId == selectedAppointment.doctorId &&
-                    item.slotDate == selectedAppointment.appointmentDate &&
-                    item.slotTime == selectedAppointment.appointmentTime);
+            
+            var slot = context.AvailableSlots
+                .FirstOrDefault(s =>
+                    s.doctorId == appointment.doctorId &&
+                    s.slotDate == appointment.appointmentDate &&
+                    s.slotTime == appointment.appointmentTime
+                );
 
-            if (selectedSlot != null)
+            if (slot != null)
             {
-                selectedSlot.isBooked = false;
+                slot.isBooked = false;
             }
 
             Console.WriteLine("Appointment Cancelled Successfully");
         }
+
+
 
         public static void CreateMedicalRecord(HospitalContext context) //08
         {
